@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 import java.util.Scanner;
 import java.io.IOException;
@@ -59,38 +61,42 @@ class HangMan {
         this.toString();
         return completed;
     }
-    public void update_status(char c) {
+
+    public boolean update_status(char c) {
+        boolean found = false;
         for(int i=0; i<puzzle_len; i++) {
             if (puzzle.charAt(i) == c) {
                 status.setElementAt(true, i);
+                found = true;
             }
         }
-    }
-    public String peek(){
-        return puzzle;
+        return found;
     }
 }
 
 public class MainActivity extends AppCompatActivity {
-    Button button;
-    Button bNew;
-    EditText editText;
-    TextView showText;
-    char currentChoice;
-    HangMan hangmanGame;
-    List<String> fruit_dictionary;
+     private Button button;
+     private Button bNew;
+     private EditText editText;
+     private TextView showText;
+     private TextView showLives;
+     private char currentChoice;
+     private HangMan hangmanGame;
+     private List<String> fruit_dictionary;
+     private int lives = 5;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initiateHangman();
-        Log.v("HangmanGame", hangmanGame.peek());
-
         button = (Button) findViewById(R.id.button);
         bNew = (Button) findViewById(R.id.button_new);
         editText = (EditText) findViewById(R.id.editText);
         showText = (TextView) findViewById(R.id.showtext);
+        showLives = (TextView) findViewById(R.id.lifeView);
+
+        initiateHangman();
 
         button.setOnClickListener(
                 new View.OnClickListener() {
@@ -98,18 +104,26 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         String editted_text = editText.getText().toString();
                         Log.v("EditText", editted_text);
-                        if (editted_text.length()==0) {
-                            alertMe("Warning", "WriteSth");
+                        if (editted_text.length() == 0) {
+                            alertMe("Warning", "Write Something, Please!");
                             return;
                         }
 
                         currentChoice = editText.getText().toString().charAt(0);
-                        hangmanGame.update_status(currentChoice);
+                        boolean correct = hangmanGame.update_status(currentChoice);
                         showText.setText(hangmanGame.toString());
                         Log.v("HangmanGame", hangmanGame.toString());
                         if (hangmanGame.checkComplete()) {
                             alertMe("Cong", "Smart Guess");
                             //startActivities(new Intent(MainActivity.this, new PopupWindow()));
+                        }
+                        if (!correct) {
+                            lives--;
+                            showLives.setText("Lives: " + String.valueOf(lives));
+                            if (lives == 0) {
+                                alertMe("Failed", "Wanna try a new one?");
+                                initiateHangman();
+                            }
                         }
                     }
                 }
@@ -120,24 +134,25 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         initiateHangman();
-                        showText.setText(hangmanGame.toString());
+
                     }
                 }
         );
     }
+
     private void alertMe(String title, String message) {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // FIRE ZE MISSILES!
                     }
                 });
         alert.setTitle(title);
         alert.setMessage(message);
         alert.create().show();
     }
+
     private void initiateHangman(){
-        List<String> fruit_dictionary = Arrays.asList(
+        fruit_dictionary = Arrays.asList(
                 "apple", "orange", "pineapple",
                 "watermelon", "durian", "banana",
                 "blackberry", "cranberry", "strawberry",
@@ -146,7 +161,9 @@ public class MainActivity extends AppCompatActivity {
         String puzzle_word = fruit_dictionary.get(rand.nextInt(fruit_dictionary.size()));
 
         hangmanGame = new HangMan(puzzle_word);
-
+        lives = 5;
+        showText.setText(hangmanGame.toString());
+        showLives.setText("Lives: " + String.valueOf(lives));
 
     }
 }
