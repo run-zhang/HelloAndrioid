@@ -1,7 +1,6 @@
 package edu.nyu.cs101.android.rz1145;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,15 +8,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
-import java.util.Scanner;
-import java.io.IOException;
-import java.util.NoSuchElementException;
 import java.util.Vector;
 import java.util.Arrays;
 import java.util.Collections;
@@ -75,8 +68,8 @@ class HangMan {
 }
 
 public class MainActivity extends AppCompatActivity {
-     private Button button;
-     private Button bNew;
+     private Button button_try;
+     private Button button_new;
      private EditText editText;
      private TextView showText;
      private TextView showLives;
@@ -90,15 +83,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        button = (Button) findViewById(R.id.button);
-        bNew = (Button) findViewById(R.id.button_new);
+        button_try = (Button) findViewById(R.id.button);
+        button_new = (Button) findViewById(R.id.button_new);
         editText = (EditText) findViewById(R.id.editText);
         showText = (TextView) findViewById(R.id.showtext);
         showLives = (TextView) findViewById(R.id.lifeView);
 
         initiateHangman();
 
-        button.setOnClickListener(
+        button_try.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -129,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
-        bNew.setOnClickListener(
+        button_new.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
